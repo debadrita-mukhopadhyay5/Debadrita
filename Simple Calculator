@@ -1,0 +1,29 @@
+print("Select the operaion you want to perform")
+print("1. Addition")
+print("2. Subtraction")
+print("3. Multiplication")
+print("4. Division")
+print("5. Floor Division")
+print("6. Exponent")
+print("7. Modulus")
+ch = int(input("Enter your choice: "))
+
+a = int(input("\nEnter 1st number: "))
+b = int(input("Enter 2nd number: "))
+
+if ch==1: 
+	print("Addition of given numbers =",(a+b))
+elif ch==2:
+	print("Subtraction of given numbers =",(a-b)) 
+elif ch==3: 
+	print("Multiplication of given numbers =",(a*b))
+elif ch==4: 
+	print("Division of given numbers =",(a/b))
+elif ch==5: 
+	print("Floor Division of given numbers =",(a//b))
+elif ch==6: 
+	print("Exponents of given numbers =",(a**b))
+elif ch==7: 
+	print("Modulus of given numbers =",(a%b))
+else: 
+	print("Incorrect Choice!!")
