@@ -1,0 +1,215 @@
+# =============================================================================
+# OPERATORS AND EXPRESSIONS DEMONSTRATION PROGRAM
+# =============================================================================
+
+def task1():
+    """
+    TASK 1: Basic Operator Usage
+    Demonstrates arithmetic operators with two integer values
+    """
+    print("=" * 60)
+    print("TASK 1: BASIC ARITHMETIC OPERATORS")
+    print("=" * 60)
+    
+    num1 = int(input("Enter the first integer: "))
+    num2 = int(input("Enter the second integer: "))
+    
+    print(f"\nResults for {num1} and {num2}:")
+    print(f"Addition: {num1} + {num2} = {num1 + num2}")
+    print(f"Subtraction: {num1} - {num2} = {num1 - num2}")
+    print(f"Multiplication: {num1} * {num2} = {num1 * num2}")
+    print(f"Division: {num1} / {num2} = {num1 / num2}")
+    print(f"Floor Division: {num1} // {num2} = {num1 // num2}")
+    print(f"Modulus (Remainder): {num1} % {num2} = {num1 % num2}")
+    print(f"Exponentiation: {num1} ** {num2} = {num1 ** num2}")
+
+def task2():
+    """
+    TASK 2: Complex Expressions and Precedence
+    Demonstrates operator precedence and associativity
+    """
+    print("\n" + "=" * 60)
+    print("TASK 2: COMPLEX EXPRESSIONS AND PRECEDENCE")
+    print("=" * 60)
+    
+    a = int(input("Enter value for a: "))
+    b = int(input("Enter value for b: "))
+    c = int(input("Enter value for c: "))
+    
+    print(f"\nUsing values: a = {a}, b = {b}, c = {c}")
+    print("-" * 40)
+    
+    # Expression 1: a + b * c
+    result1 = a + b * c
+    print(f"Expression 1: a + b * c = {a} + {b} * {c}")
+    print(f"Result: {result1}")
+    print("Explanation: Multiplication (*) has higher precedence than addition (+), so b*c is evaluated first")
+    print(f"Step 1: {b} * {c} = {b * c}")
+    print(f"Step 2: {a} + {b * c} = {result1}")
+    print()
+    
+    # Expression 2: (a + b) * c
+    result2 = (a + b) * c
+    print(f"Expression 2: (a + b) * c = ({a} + {b}) * {c}")
+    print(f"Result: {result2}")
+    print("Explanation: Parentheses have highest precedence, so (a+b) is evaluated first")
+    print(f"Step 1: {a} + {b} = {a + b}")
+    print(f"Step 2: {a + b} * {c} = {result2}")
+    print()
+    
+    # Expression 3: a * b / c
+    result3 = a * b / c
+    print(f"Expression 3: a * b / c = {a} * {b} / {c}")
+    print(f"Result: {result3}")
+    print("Explanation: Multiplication (*) and division (/) have same precedence, left-to-right associativity")
+    print(f"Step 1: {a} * {b} = {a * b}")
+    print(f"Step 2: {a * b} / {c} = {result3}")
+    print()
+    
+    # Expression 4: a + b - c * a / b
+    result4 = a + b - c * a / b
+    print(f"Expression 4: a + b - c * a / b = {a} + {b} - {c} * {a} / {b}")
+    print(f"Result: {result4}")
+    print("Explanation: *,/ have higher precedence than +,-; *,/ have left-to-right associativity")
+    print(f"Step 1: {c} * {a} = {c * a} (multiplication first)")
+    print(f"Step 2: {c * a} / {b} = {c * a / b} (division next)")
+    print(f"Step 3: {a} + {b} = {a + b} (leftmost addition)")
+    print(f"Step 4: {a + b} - {c * a / b} = {result4} (subtraction last)")
+
+def task3():
+    """
+    TASK 3: Predict and Verify Output
+    Tests understanding of operator precedence through prediction vs actual results
+    """
+    print("\n" + "=" * 60)
+    print("TASK 3: PREDICT AND VERIFY OUTPUT")
+    print("=" * 60)
+    
+    # Test values
+    x, y, z = 10, 5, 2
+    
+    print(f"Test values: x = {x}, y = {y}, z = {z}")
+    print("-" * 40)
+    
+    # Snippet 1
+    print("Code Snippet 1: x + y * z")
+    print("Prediction: Multiplication first (5*2=10), then addition (10+10=20)")
+    result = x + y * z
+    print(f"Actual Result: {result}")
+    print(f"Verification: {'✓ Correct' if result == 20 else '✗ Incorrect'}")
+    print()
+    
+    # Snippet 2
+    print("Code Snippet 2: x / y * z")
+    print("Prediction: Left-to-right: division first (10/5=2), then multiplication (2*2=4)")
+    result = x / y * z
+    print(f"Actual Result: {result}")
+    print(f"Verification: {'✓ Correct' if result == 4 else '✗ Incorrect'}")
+    print()
+    
+    # Snippet 3
+    print("Code Snippet 3: x % y + z ** 2")
+    print("Prediction: Exponentiation first (2**2=4), then modulus (10%5=0), then addition (0+4=4)")
+    result = x % y + z ** 2
+    print(f"Actual Result: {result}")
+    print(f"Verification: {'✓ Correct' if result == 4 else '✗ Incorrect'}")
+    print()
+    
+    # Snippet 4
+    print("Code Snippet 4: x == y + z and y > z")
+    print("Prediction: Addition first (5+2=7), then comparisons: 10==7(False) and 5>2(True) = False")
+    result = x == y + z and y > z
+    print(f"Actual Result: {result}")
+    print(f"Verification: {'✓ Correct' if result == False else '✗ Incorrect'}")
+    print()
+
+def task4():
+    """
+    TASK 4: Parentheses to Control Precedence
+    Demonstrates how parentheses change expression evaluation
+    """
+    print("\n" + "=" * 60)
+    print("TASK 4: PARENTHESES TO CONTROL PRECEDENCE")
+    print("=" * 60)
+    
+    a = int(input("Enter value for a: "))
+    b = int(input("Enter value for b: "))
+    c = int(input("Enter value for c: "))
+    
+    print(f"\nUsing values: a = {a}, b = {b}, c = {c}")
+    print("-" * 40)
+    
+    # Example 1: (a + b) * c vs a + (b * c)
+    print("EXAMPLE 1: Addition vs Multiplication Priority")
+    result1a = (a + b) * c
+    result1b = a + (b * c)
+    print(f"(a + b) * c = ({a} + {b}) * {c} = {result1a}")
+    print(f"a + (b * c) = {a} + ({b} * {c}) = {result1b}")
+    print(f"Difference: {abs(result1a - result1b)}")
+    print("Parentheses force either addition or multiplication to be evaluated first")
+    print()
+    
+    # Example 2: (a - b) / c vs a - (b / c)
+    print("EXAMPLE 2: Subtraction vs Division Priority")
+    result2a = (a - b) / c
+    result2b = a - (b / c)
+    print(f"(a - b) / c = ({a} - {b}) / {c} = {result2a}")
+    print(f"a - (b / c) = {a} - ({b} / {c}) = {result2b}")
+    print(f"Difference: {abs(result2a - result2b)}")
+    print("Parentheses control whether subtraction or division happens first")
+    print()
+    
+    # Example 3: Complex expression with different parentheses
+    print("EXAMPLE 3: Complex Expression Variations")
+    expr1 = a * b + c / a - b
+    expr2 = a * (b + c) / (a - b)
+    expr3 = (a * b + c) / (a - b)
+    
+    print(f"Without parentheses: a * b + c / a - b = {expr1}")
+    print(f"With parentheses: a * (b + c) / (a - b) = {expr2}")
+    print(f"Different grouping: (a * b + c) / (a - b) = {expr3}")
+    print("Each placement of parentheses changes the evaluation order significantly")
+    print()
+
+def operator_precedence_table():
+    """
+    Displays operator precedence table for reference
+    """
+    print("\n" + "=" * 60)
+    print("OPERATOR PRECEDENCE TABLE (Highest to Lowest)")
+    print("=" * 60)
+    
+    precedence_table = [
+        ("Operator", "Description", "         Associativity"),
+        ("()", "Parentheses", "         Left to Right"),
+        ("**", "Exponentiation", "         Right to Left"),
+        ("*, /, //, %", "Multiplication, Division, Floor Division, Modulus", "Left to Right"),
+        ("+, -", "Addition, Subtraction", "         Left to Right"),
+        ("==, !=, >, <, >=, <=", "Comparisons", "         Left to Right"),
+        ("not", "Boolean NOT", "         Right to Left"),
+        ("and", "Boolean AND", "         Left to Right"),
+        ("or", "Boolean OR", "         Left to Right")]
+    
+    for operator, description, associativity in precedence_table:
+        print(f"{operator:20} {description:40} {associativity}")
+
+def main():
+    """
+    Main function to run all tasks
+    """
+    print("OPERATORS AND EXPRESSIONS LEARNING PROGRAM")
+    print("This program demonstrates various operator concepts in Python\n")
+    
+    # Run all tasks
+    task1()
+    task2()
+    task3()
+    task4()
+    operator_precedence_table()
+    
+    print("\n" + "=" * 60)
+    print("PROGRAM COMPLETED SUCCESSFULLY!")
+    print("=" * 60)
+
+# Run the program
+main()
