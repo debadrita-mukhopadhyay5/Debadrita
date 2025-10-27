@@ -1,0 +1,50 @@
+import random as r
+
+ci = 0
+cy = 0
+
+lst = ["stone", "paper", "scissor"]
+
+print("Let's play a match of 5 points.")
+
+for i in range (1,6):
+    ch = r.choice(lst)
+    print("My choice is",ch)
+
+    print("\nChoose from 'stone', 'paper' or 'scissor'.")
+    inp = input("Enter you choice: ")
+
+    if inp=="stone" and ch=="paper":
+        print("I win!!")
+        ci = ci+1
+    elif inp=="stone" and ch=="scissor":
+        print("You win!!")
+        cy = cy+1
+    elif inp=="paper" and ch=="scissor":
+        print("I win!!")
+        ci = ci+1
+    elif inp=="paper" and ch=="stone":
+        print("You win!!")
+        cy = cy+1
+    elif inp=="scissor" and ch=="stone":
+        print("I win!!") 
+        ci = ci+1
+    elif inp=="scissor" and ch=="paper":
+        print("You win!!")
+        cy = cy+1
+    else: 
+        print("No score.")
+        continue 
+
+print("\nMy score is",ci)
+print("Your score is",cy)
+if ci > cy:
+    print("I win the match!!")
+elif ci < cy: 
+    print("You win the match!!")
+elif ci==cy: 
+    print("Match is draw.")
+else: 
+    print("Sorry for the inconvenience.\nTechnical Error")
+
+
