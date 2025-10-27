@@ -1,0 +1,331 @@
+import mysql.connector
+import csv
+
+# Database connection function
+def connect_db():
+    return mysql.connector.connect(host="localhost",user="root",password="",
+        database="financial_management")
+
+# Initialize database and create table
+def initialize_database():
+    conn = connect_db()
+    cursor = conn.cursor()
+    
+    # Create database if not exists
+    cursor.execute("CREATE DATABASE IF NOT EXISTS financial_management")
+    cursor.execute("USE financial_management")
+    
+    # Create transactions table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS transactions (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            type VARCHAR(10) NOT NULL,
+            amount DECIMAL(10,2) NOT NULL,
+            category VARCHAR(50) NOT NULL,
+            description TEXT,
+            date VARCHAR(10) NOT NULL
+        )
+    """)
+    
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+# Categories
+categories = {
+    'expenses': ['Food', 'Transport', 'Bills', 'Entertainment', 'Shopping', 'Healthcare', 'Education', 'Other'],
+    'income': ['Salary', 'Freelance', 'Investment', 'Gift', 'Other']
+}
+
+def add_transaction(transaction_type, amount, category, description=""):
+    """Add a new transaction to database"""
+    if transaction_type.lower() not in ['income', 'expense']:
+        print("Error: Transaction type must be 'income' or 'expense'")
+        return False
+    
+    if transaction_type.lower() == 'expense' and category not in categories['expenses']:
+        print(f"Error: Invalid expense category")
+        return False
+    
+    if transaction_type.lower() == 'income' and category not in categories['income']:
+        print(f"Error: Invalid income category")
+        return False
+    
+    amount = float(amount)
+    if amount <= 0:
+        print("Error: Amount must be positive")
+        return False
+    
+    conn = connect_db()
+    cursor = conn.cursor()
+    
+    cursor.execute("""INSERT INTO transactions (type, amount, category, description, date)
+                   VALUES (%s, %s, %s, %s, %s)""", 
+                   (transaction_type.lower(), amount, category, description, '2024-01-01'))
+    
+    conn.commit()
+    cursor.close()
+    conn.close()
+    print("Transaction added successfully!")
+    return True
+
+def update_transaction(transaction_id, transaction_type=None, amount=None, category=None, description=None):
+    """Update an existing transaction"""
+    conn = connect_db()
+    cursor = conn.cursor()
+    
+    # Get current transaction data
+    cursor.execute("SELECT * FROM transactions WHERE id = %s", (transaction_id,))
+    transaction = cursor.fetchone()
+    
+    if not transaction:
+        print("Error: Transaction not found")
+        return False
+    
+    # Prepare update values
+    update_fields = []
+    update_values = []
+    
+    if transaction_type:
+        if transaction_type.lower() not in ['income', 'expense']:
+            print("Error: Transaction type must be 'income' or 'expense'")
+            return False
+        update_fields.append("type = %s")
+        update_values.append(transaction_type.lower())
+    
+    if amount:
+        amount = float(amount)
+        if amount <= 0:
+            print("Error: Amount must be positive")
+            return False
+        update_fields.append("amount = %s")
+        update_values.append(amount)
+    
+    if category:
+        # Check if category is valid for the transaction type
+        current_type = transaction_type.lower() if transaction_type else transaction[1]
+        if current_type == 'expense' and category not in categories['expenses']:
+            print(f"Error: Invalid expense category")
+            return False
+        if current_type == 'income' and category not in categories['income']:
+            print(f"Error: Invalid income category")
+            return False
+        update_fields.append("category = %s")
+        update_values.append(category)
+    
+    if description:
+        update_fields.append("description = %s")
+        update_values.append(description)
+    
+    if update_fields:
+        update_values.append(transaction_id)
+        update_query = f"UPDATE transactions SET {', '.join(update_fields)} WHERE id = %s"
+        cursor.execute(update_query, update_values)
+        conn.commit()
+        print("Transaction updated successfully!")
+    else:
+        print("No fields to update")
+    
+    cursor.close()
+    conn.close()
+    return True
+
+def delete_transaction(transaction_id):
+    """Delete a transaction from database"""
+    conn = connect_db()
+    cursor = conn.cursor()
+    
+    cursor.execute("DELETE FROM transactions WHERE id = %s", (transaction_id,))
+    
+    if cursor.rowcount > 0:
+        conn.commit()
+        print("Transaction deleted successfully!")
+        cursor.close()
+        conn.close()
+        return True
+    else:
+        print("Error: Transaction not found")
+        cursor.close()
+        conn.close()
+        return False
+
+def view_all_transactions():
+    """Display all transactions from database"""
+    conn = connect_db()
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT * FROM transactions ORDER BY id")
+    transactions = cursor.fetchall()
+    
+    print("\n=== ALL TRANSACTIONS ===")
+    if transactions:
+        for transaction in transactions:
+            print(f"ID: {transaction[0]} | {transaction[1].title()}: ${transaction[2]:.2f} | {transaction[3]} | {transaction[4]} | {transaction[5]}")
+    else:
+        print("No transactions found")
+    print("========================")
+    
+    cursor.close()
+    conn.close()
+    return transactions
+
+def view_summary():
+    """Display total income, expenses, and balance from database"""
+    conn = connect_db()
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT type, SUM(amount) FROM transactions GROUP BY type")
+    results = cursor.fetchall()
+    
+    total_income = 0
+    total_expenses = 0
+    
+    for result in results:
+        if result[0] == 'income':
+            total_income = result[1] or 0
+        else:
+            total_expenses = result[1] or 0
+    
+    balance = total_income - total_expenses
+    
+    print("\n=== FINANCIAL SUMMARY ===")
+    print(f"Total Income: ${total_income:.2f}")
+    print(f"Total Expenses: ${total_expenses:.2f}")
+    print(f"Remaining Balance: ${balance:.2f}")
+    print("=========================")
+    
+    cursor.close()
+    conn.close()
+
+def category_wise_expenditure():
+    """Display category-wise expenditure from database"""
+    conn = connect_db()
+    cursor = conn.cursor()
+    
+    cursor.execute("""
+        SELECT category, SUM(amount) 
+        FROM transactions 
+        WHERE type = 'expense' 
+        GROUP BY category
+    """)
+    results = cursor.fetchall()
+    
+    print("\n=== CATEGORY-WISE EXPENDITURE ===")
+    if results:
+        for category, total in results:
+            print(f"{category}: ${total:.2f}")
+    else:
+        print("No expense transactions found")
+    print("================================")
+    
+    cursor.close()
+    conn.close()
+
+def search_transactions(search_type, keyword):
+    """Search transactions by category or date from database"""
+    conn = connect_db()
+    cursor = conn.cursor()
+    
+    if search_type == 'category':
+        cursor.execute("SELECT * FROM transactions WHERE category = %s", (keyword,))
+    elif search_type == 'date':
+        cursor.execute("SELECT * FROM transactions WHERE date = %s", (keyword,))
+    else:
+        print("Error: Search type must be 'category' or 'date'")
+        return
+    
+    results = cursor.fetchall()
+    
+    print(f"\n=== SEARCH RESULTS ({len(results)} found) ===")
+    for transaction in results:
+        print(f"ID: {transaction[0]} | {transaction[1].title()}: ${transaction[2]:.2f} | {transaction[3]} | {transaction[4]} | {transaction[5]}")
+    print("================================")
+    
+    cursor.close()
+    conn.close()
+
+def export_to_csv():
+    """Export all transactions to CSV file"""
+    conn = connect_db()
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT * FROM transactions")
+    transactions = cursor.fetchall()
+    
+    with open('financial_data.csv', 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(['ID', 'Type', 'Amount', 'Category', 'Description', 'Date'])
+        writer.writerows(transactions)
+    
+    print("Data exported to financial_data.csv successfully!")
+    cursor.close()
+    conn.close()
+
+def main():
+    # Initialize database
+    initialize_database()
+    
+    while True:
+        print("\n=== FINANCIAL MANAGEMENT APPLICATION ===")
+        print("1. Add Transaction")
+        print("2. Update Transaction")
+        print("3. Delete Transaction")
+        print("4. View Financial Summary")
+        print("5. View Category-wise Expenditure")
+        print("6. Search Transactions")
+        print("7. View All Transactions")
+        print("8. Export to CSV")
+        print("9. Exit")
+        
+        choice = input("\nEnter your choice (1-9): ")
+        
+        if choice == '1':
+            print("\n--- Add New Transaction ---")
+            transaction_type = input("Enter type (income/expense): ")
+            amount = input("Enter amount: ")
+            category = input("Enter category: ")
+            description = input("Enter description (optional): ")
+            add_transaction(transaction_type, amount, category, description)
+            
+        elif choice == '2':
+            print("\n--- Update Transaction ---")
+            view_all_transactions()
+            transaction_id = int(input("Enter transaction ID to update: "))
+            transaction_type = input("Enter new type (income/expense) or press enter to skip: ")
+            amount = input("Enter new amount or press enter to skip: ")
+            category = input("Enter new category or press enter to skip: ")
+            description = input("Enter new description or press enter to skip: ")
+            update_transaction(transaction_id, transaction_type or None, amount or None, category or None, description or None)
+            
+        elif choice == '3':
+            print("\n--- Delete Transaction ---")
+            view_all_transactions()
+            transaction_id = int(input("Enter transaction ID to delete: "))
+            delete_transaction(transaction_id)
+            
+        elif choice == '4':
+            view_summary()
+            
+        elif choice == '5':
+            category_wise_expenditure()
+            
+        elif choice == '6':
+            print("\n--- Search Transactions ---")
+            search_type = input("Search by (category/date): ")
+            keyword = input("Enter search keyword: ")
+            search_transactions(search_type, keyword)
+            
+        elif choice == '7':
+            view_all_transactions()
+            
+        elif choice == '8':
+            export_to_csv()
+            
+        elif choice == '9':
+            print("Thank you for using Financial Management Application!")
+            break
+            
+        else:
+            print("Invalid choice! Please try again.")
+
+main()
