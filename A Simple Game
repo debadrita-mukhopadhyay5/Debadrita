@@ -9,11 +9,11 @@ print("Let's play a match of 5 points.")
 
 for i in range (1,6):
     ch = r.choice(lst)
-    print("My choice is",ch)
 
     print("\nChoose from 'stone', 'paper' or 'scissor'.")
     inp = input("Enter you choice: ")
-
+    print("My choice is",ch)
+    
     if inp=="stone" and ch=="paper":
         print("I win!!")
         ci = ci+1
